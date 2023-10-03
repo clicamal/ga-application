@@ -1,13 +1,14 @@
 use rand::{random, Rng, thread_rng};
 use rand::prelude::SliceRandom;
+use rand::rngs::ThreadRng;
 
 use crate::individual::Individual;
 
 type Population = Vec<Individual>;
 
-fn gen_pop(pop_size: usize, chromosome_size: usize, min_val: f64, max_val: f64) -> Population {
+fn gen_pop(pop_size: usize, chromosome_size: usize, min_val: f64, max_val: f64, rng: &mut ThreadRng) -> Population {
     (0..pop_size).map(|_| Individual {
-        chromosome: (0..chromosome_size).map(|_| thread_rng().gen_range(min_val..max_val)).collect(),
+        chromosome: (0..chromosome_size).map(|_| rng.gen_range(min_val..max_val)).collect(),
         fitness: 0.0
     }).collect()
 }
@@ -22,9 +23,8 @@ fn rank(pop: &mut Population) {
     pop.sort_by(|ind1, ind2| ind2.fitness.partial_cmp(&ind1.fitness).unwrap());
 }
 
-fn select(pop: &Population, sum_of_fitnesses: f64) -> &Individual {
+fn select<'pop>(pop: &'pop Population, sum_of_fitnesses: f64, rng: &mut ThreadRng) -> &'pop Individual {
     let rnd: f64 = random();
-    let mut rng = thread_rng();
 
     for ind in pop {
         let ind_selection_prob = ind.fitness / sum_of_fitnesses;
@@ -34,7 +34,7 @@ fn select(pop: &Population, sum_of_fitnesses: f64) -> &Individual {
         }
     }
 
-    pop.choose(&mut rng).unwrap()
+    pop.choose(&mut rng.clone()).unwrap()
 }
 
 fn crossover(par1: &Individual, par2: &Individual, chromosome_size: usize, min_val: f64, max_val: f64) -> Individual {
@@ -56,12 +56,12 @@ fn crossover(par1: &Individual, par2: &Individual, chromosome_size: usize, min_v
     }
 }
 
-fn mutate(ind: &mut Individual, min_val: f64, max_val: f64) {
+fn mutate(ind: &mut Individual, min_val: f64, max_val: f64, rng: &mut ThreadRng) {
     let rnd: f64 = random();
     let rnd_bit_pos =
-    if rnd <= 0.75 { thread_rng().gen_range(0..32) }
-    else if rnd <= 0.90 { thread_rng().gen_range(31..48) }
-    else { thread_rng().gen_range(47..64) };
+    if rnd <= 0.75 { rng.gen_range(0..32) }
+    else if rnd <= 0.90 { rng.gen_range(31..48) }
+    else { rng.gen_range(47..64) };
 
     let mask = 1 << rnd_bit_pos;
 
@@ -84,9 +84,10 @@ pub fn ga(chromosome_size: usize, min_val: f64, max_val: f64, mut_rat: f64, pop_
     let mut pop;
     let parents_size = pop_size / 2;
     let mut best: Individual = Individual { chromosome: vec![], fitness: 0.0 };
+    let mut rng = thread_rng();
 
     println!("Generating initial population...");
-    pop = gen_pop(pop_size, chromosome_size, min_val, max_val);
+    pop = gen_pop(pop_size, chromosome_size, min_val, max_val, &mut rng);
 
     println!("Generated population: {:?}", pop);
 
@@ -108,7 +109,7 @@ pub fn ga(chromosome_size: usize, min_val: f64, max_val: f64, mut_rat: f64, pop_
             println!("Selecting parents...");
 
             parents = (0..parents_size).map(|_| (0..2).map(|_| {
-                let parent = select(&pop, sum_of_fitnesses);
+                let parent = select(&pop, sum_of_fitnesses, &mut rng);
 
                 println!("Selected parent: {:?}", parent);
 
@@ -150,7 +151,7 @@ pub fn ga(chromosome_size: usize, min_val: f64, max_val: f64, mut_rat: f64, pop_
                 if rnd < mut_rat {
                     let ind_bef_mut = ind.clone();
 
-                    mutate(ind, min_val, max_val);
+                    mutate(ind, min_val, max_val, &mut rng);
 
                     println!("Mutation occurred: {:?} -> {:?}", ind_bef_mut, ind);
 
