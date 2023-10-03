@@ -42,13 +42,8 @@ fn crossover(par1: &Individual, par2: &Individual, chromosome_size: usize, min_v
         chromosome: (0..chromosome_size).enumerate().map(|(gene_id, _)| {
             let gene = f64::from_bits(par1.chromosome[gene_id].to_bits() & par2.chromosome[gene_id].to_bits());
 
-            if gene < min_val {
-                return min_val
-            }
-
-            if gene > max_val {
-                return max_val
-            }
+            if gene < min_val { return min_val }
+            else if gene > max_val { return max_val }
 
             gene
         }).collect(),
@@ -68,13 +63,8 @@ fn mutate(ind: &mut Individual, min_val: f64, max_val: f64, rng: &mut ThreadRng)
     ind.chromosome.iter_mut().for_each(|gene| {
         let mut mutated_gene = f64::from_bits(gene.to_bits() ^ mask);
 
-        if mutated_gene < min_val {
-            mutated_gene = min_val;
-        }
-
-        if mutated_gene > max_val {
-            mutated_gene = max_val;
-        }
+        if mutated_gene < min_val { mutated_gene = min_val; }
+        else if mutated_gene > max_val { mutated_gene = max_val; }
 
         *gene = mutated_gene;
     });
