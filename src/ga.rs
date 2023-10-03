@@ -88,7 +88,7 @@ pub fn ga(chromosome_size: usize, min_val: f64, max_val: f64, mut_rat: f64, pop_
     println!("Evaluated initial population: {:?}", pop);
 
     for i in 0..nofit {
-        let parents: Vec<Vec<&Individual>>;
+        let parents: Vec<[&Individual; 2]>;
         let children: Vec<Individual>;
 
         println!("Generation {:?}:", i + 1);
@@ -98,13 +98,13 @@ pub fn ga(chromosome_size: usize, min_val: f64, max_val: f64, mut_rat: f64, pop_
 
             println!("Selecting parents...");
 
-            parents = (0..parents_size).map(|_| (0..2).map(|_| {
-                let parent = select(&pop, sum_of_fitnesses, &mut rng);
+            parents = (0..parents_size).map(|_| {
+                let parents = [select(&pop, sum_of_fitnesses, &mut rng), select(&pop, sum_of_fitnesses, &mut rng)];
 
-                println!("Selected parent: {:?}", parent);
+                println!("Selected parents: {:?}", parents);
 
-                parent
-            }).collect()).collect();
+                parents
+            }).collect();
         }
 
         {
@@ -121,8 +121,7 @@ pub fn ga(chromosome_size: usize, min_val: f64, max_val: f64, mut_rat: f64, pop_
                 println!("Result: {:?}", child);
 
                 child
-            }
-            ).collect();
+            }).collect();
         }
 
         pop.reverse();
