@@ -114,7 +114,7 @@ pub fn ga(chromosome_size: usize, min_val: f64, max_val: f64, mut_rat: f64, pop_
                 let parent1 = parents[couple_id][0];
                 let parent2 = parents[couple_id][1];
 
-                println!("Cross_over: {:?} {:?}", parent1, parent2);
+                println!("Cross-over: {:?} {:?}", parent1, parent2);
 
                 let child = crossover(parent1, parent2, chromosome_size, min_val, max_val);
 
