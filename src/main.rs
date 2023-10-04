@@ -30,7 +30,7 @@ fn main() {
         if best.fitness <= last_best.fitness {
             best = last_best.clone();
             last_best = ga(chromosome_size, min_val, max_val, mut_rat, pop_size, nofit, fitness);
-        }
+        } else { break; }
     }
 
     println!("Best solution: {:?}", best);
