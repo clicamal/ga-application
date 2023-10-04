@@ -25,11 +25,13 @@ fn main() {
     let mut best = Individual { chromosome: vec![], fitness: 0.0 };
 
     for i in 0..nofr {
-        println!("Run {:?}", i + 1);
-
         if best.fitness <= last_best.fitness {
+            println!("Run {:?}", i + 1);
+
             best = last_best.clone();
             last_best = ga(chromosome_size, min_val, max_val, mut_rat, pop_size, nofit, fitness);
+
+            println!("Best of run: {:?}", best);
         } else { break; }
     }
 
