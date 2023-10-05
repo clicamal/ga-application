@@ -2,7 +2,11 @@ use rand::{random, Rng, thread_rng};
 use rand::prelude::SliceRandom;
 use rand::rngs::ThreadRng;
 
-use crate::individual::Individual;
+#[derive(Debug, Clone)]
+pub struct Individual {
+    pub chromosome: Vec<f64>,
+    pub fitness: f64
+}
 
 type Population = Vec<Individual>;
 

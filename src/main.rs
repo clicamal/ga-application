@@ -1,9 +1,7 @@
 use std::env;
-use crate::ga::ga;
-use crate::individual::Individual;
+use crate::ga::{ga, Individual};
 
 mod ga;
-mod individual;
 
 fn fitness(input: &Vec<f64>) -> f64 {
     let x = input[0];
