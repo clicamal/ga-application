@@ -163,7 +163,7 @@ pub fn ga(chromosome_size: usize, min_val: f64, max_val: f64, mut_rat: f64, pop_
 
         println!("New population: {:?}", pop);
 
-        best = pop[0].clone();
+        if best.fitness < pop[0].fitness { best = pop[0].clone(); }
 
         println!("Best of generation: {:?}", best);
     }
